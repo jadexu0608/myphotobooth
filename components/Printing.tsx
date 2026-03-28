@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { PHOTO_BOOTH_BW_FILTER } from "@/lib/photoboothPhotoFilter";
 
 // ── 尺寸 (SVG natural × S) ──────────────────────────────────────────────────
 const S = 1.5;
@@ -185,6 +186,7 @@ export default function Printing({ onDone }: { onDone: () => void }) {
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
+                      filter: PHOTO_BOOTH_BW_FILTER,
                     }}
                   />
                 )}

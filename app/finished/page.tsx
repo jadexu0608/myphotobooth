@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Printing from "@/components/Printing";
 import Finished from "@/components/Finished";
+import { PHOTO_BOOTH_BW_FILTER } from "@/lib/photoboothPhotoFilter";
 
 // Canvas scale for downloaded image (6× SVG natural size)
 const DL_S = 6;
@@ -52,7 +53,10 @@ export default function ResultPage() {
     Promise.all(photos.slice(0, 3).map(loadImg)).then((imgs) => {
       imgs.forEach((img, i) => {
         const s = DL_SLOTS[i];
+        ctx.save();
+        ctx.filter = PHOTO_BOOTH_BW_FILTER;
         ctx.drawImage(img, s.x, s.y, s.w, s.h);
+        ctx.restore();
       });
 
       ctx.fillStyle = "#ffffff";

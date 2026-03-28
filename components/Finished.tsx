@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { PHOTO_BOOTH_BW_FILTER } from "@/lib/photoboothPhotoFilter";
 
 // Photostrip displayed at 2.5× its SVG size
 const S = 2.5;
@@ -67,7 +68,12 @@ export default function Finished({ photos, today, shared, onDownload, onShare }:
               <img
                 src={photos[i]}
                 alt=""
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  filter: PHOTO_BOOTH_BW_FILTER,
+                }}
               />
             )}
           </div>
