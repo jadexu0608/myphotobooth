@@ -8,6 +8,13 @@ import { motion, AnimatePresence } from "framer-motion";
 const TOTAL_SHOTS = 3;
 const COUNTDOWN_START = 3;
 
+/** 资源里 count down-1 / count down-2 与数字画面对调，映射为显示顺序 3→2→1 */
+function countdownAssetNum(n: number): number {
+  if (n === 1) return 2;
+  if (n === 2) return 1;
+  return n;
+}
+
 type Phase = "idle" | "countdown" | "flash";
 
 export default function BoothPage() {
@@ -171,7 +178,7 @@ export default function BoothPage() {
                 transition={{ duration: 0.22 }}
               >
                 <img
-                  src={`/svg/count down-${countdown}.svg`}
+                  src={`/svg/count down-${countdownAssetNum(countdown)}.svg`}
                   style={{
                     height: "82px",
                     width: "auto",
