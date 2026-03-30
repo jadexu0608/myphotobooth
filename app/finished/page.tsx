@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Printing from "@/components/Printing";
 import Finished from "@/components/Finished";
-import { PHOTO_BOOTH_BW_FILTER } from "@/lib/photoboothPhotoFilter";
 
 // Canvas scale for downloaded image (6× SVG natural size)
 const DL_S = 6;
@@ -15,6 +14,35 @@ const DL_SLOTS = [
 ];
 
 type Phase = "printing" | "done";
+
+function applyPhotoboothBwToArea(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number
+) {
+  const imageData = ctx.getImageData(x, y, w, h);
+  const data = imageData.data;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+
+    // Luma grayscale + mild photobooth-style contrast/brightness bump.
+    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+    const contrasted = (gray - 128) * 1.2 + 128;
+    const brightened = contrasted * 1.06;
+    const out = Math.max(0, Math.min(255, brightened));
+
+    data[i] = out;
+    data[i + 1] = out;
+    data[i + 2] = out;
+  }
+
+  ctx.putImageData(imageData, x, y);
+}
 
 export default function ResultPage() {
   const [photos, setPhotos] = useState<string[]>([]);
@@ -53,10 +81,8 @@ export default function ResultPage() {
     Promise.all(photos.slice(0, 3).map(loadImg)).then((imgs) => {
       imgs.forEach((img, i) => {
         const s = DL_SLOTS[i];
-        ctx.save();
-        ctx.filter = PHOTO_BOOTH_BW_FILTER;
         ctx.drawImage(img, s.x, s.y, s.w, s.h);
-        ctx.restore();
+        applyPhotoboothBwToArea(ctx, s.x, s.y, s.w, s.h);
       });
 
       ctx.fillStyle = "#ffffff";
