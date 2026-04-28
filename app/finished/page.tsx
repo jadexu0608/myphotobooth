@@ -60,8 +60,8 @@ export default function ResultPage() {
 
   // Download: compose photo strip on canvas and trigger save
   const handleDownload = () => {
-    const CW = Math.round(55  * DL_S); // 330
-    const CH = Math.round(192 * DL_S); // 1152
+    const CW = Math.round(55  * DL_S); // 83
+    const CH = Math.round(192 * DL_S); // 288
     const canvas = document.createElement("canvas");
     canvas.width  = CW;
     canvas.height = CH;
