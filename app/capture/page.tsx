@@ -15,15 +15,6 @@ function countdownAssetNum(n: number): number {
   return n;
 }
 
-/** 本地预览用：未提交到仓库（线上仍无滤镜 UI） */
-const FILTER_PRESETS = [
-  { id: "color", label: "原图", css: "" },
-  { id: "bw", label: "黑白", css: "grayscale(1) contrast(1.12)" },
-  { id: "sepia", label: "复古", css: "sepia(0.45) contrast(1.05) brightness(1.02)" },
-  { id: "cool", label: "清冷", css: "saturate(0.92) contrast(1.08) hue-rotate(-12deg)" },
-] as const;
-
-type FilterId = (typeof FILTER_PRESETS)[number]["id"];
 type Phase = "idle" | "countdown" | "flash";
 
 export default function BoothPage() {
@@ -35,9 +26,6 @@ export default function BoothPage() {
   const [countdown, setCountdown] = useState(COUNTDOWN_START);
   const [photos, setPhotos] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [filterId, setFilterId] = useState<FilterId>("color");
-
-  const activeFilterCss = FILTER_PRESETS.find((p) => p.id === filterId)?.css ?? "";
 
   useEffect(() => {
     let stream: MediaStream;
@@ -65,14 +53,12 @@ export default function BoothPage() {
     canvas.height = h;
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
-    ctx.save();
-    ctx.filter = activeFilterCss || "none";
+    ctx.filter = "grayscale(1) contrast(1.2) brightness(1.05)";
     ctx.translate(w, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0, w, h);
-    ctx.restore();
     return canvas.toDataURL("image/jpeg", 0.92);
-  }, [activeFilterCss]);
+  }, []);
 
   useEffect(() => {
     if (phase !== "countdown") return;
@@ -158,7 +144,6 @@ export default function BoothPage() {
               objectFit: "cover",
               transform: "scaleX(-1)",
               zIndex: 1,
-              ...(activeFilterCss ? { filter: activeFilterCss } : {}),
             }}
           />
 
@@ -243,25 +228,6 @@ export default function BoothPage() {
                 className="h-[10px] w-[10px] rounded-full border border-black"
                 style={{ background: i < photos.length ? "#000" : "#fff" }}
               />
-            ))}
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
-            <span className="font-hand text-[20px] text-black/50 mr-1">滤镜</span>
-            {FILTER_PRESETS.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                disabled={phase !== "idle" && phase !== "countdown"}
-                onClick={() => setFilterId(p.id)}
-                className="font-hand text-[22px] leading-none px-3 py-1.5 rounded-full border-2 border-black transition-colors disabled:opacity-40"
-                style={{
-                  background: filterId === p.id ? "#000" : "#fff",
-                  color: filterId === p.id ? "#fff" : "#000",
-                }}
-              >
-                {p.label}
-              </button>
             ))}
           </div>
 
