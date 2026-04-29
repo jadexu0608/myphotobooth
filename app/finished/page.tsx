@@ -60,7 +60,7 @@ export default function ResultPage() {
 
   // Download: compose photo strip on canvas and trigger save
   const handleDownload = () => {
-    const CW = Math.round(55  * DL_S); // 83
+    const CW = Math.round(55  * DL_S); // 110
     const CH = Math.round(192 * DL_S); // 288
     const canvas = document.createElement("canvas");
     canvas.width  = CW;
@@ -81,14 +81,15 @@ export default function ResultPage() {
     Promise.all(photos.slice(0, 3).map(loadImg)).then((imgs) => {
       imgs.forEach((img, i) => {
         const s = DL_SLOTS[i];
-        ctx.drawImage(img, s.x, s.y, s.w, s.h);
+
+        const cutW = img.height * (s.w / s.h);
+        const cutX = (img.width - cutW) / 2;
+
+        ctx.drawImage(img, cutX, 0, cutW, img.height, s.x, s.y, s.w, s.h);
+
         applyPhotoboothBwToArea(ctx, s.x, s.y, s.w, s.h);
       });
 
-      ctx.fillStyle = "#ffffff";
-      ctx.font      = `${Math.round(8 * DL_S)}px serif`;
-      ctx.textAlign = "center";
-      ctx.fillText(today, CW / 2, CH - Math.round(4 * DL_S));
 
       const a = document.createElement("a");
       a.download = "photobooth.jpg";
